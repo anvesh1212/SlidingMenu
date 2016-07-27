@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<instant-run
+    abi="armeabi-v7a,armeabi"
+    api-level="23"
+    density="xxhdpi"
+    format="7"
+    timestamp="573334771724598"
+    token="6230285712036412468" >
+
+    <task
+        name="javac"
+        duration="417" />
+    <task
+        name="instant-run-dex"
+        duration="0" />
+    <task
+        name="instant-run-transform"
+        duration="99" />
+    <task
+        name="verifier"
+        duration="7" />
+
+    <artifact
+        location="C:\Users\anves\Documents\projects\face detection\github\Conversations-master\SlidingMenu\app\build\outputs\apk\app-debug.apk"
+        type="MAIN" />
+
+    <build timestamp="573334771724598" >
+        <artifact
+            location="C:\Users\anves\Documents\projects\face detection\github\Conversations-master\SlidingMenu\app\build\outputs\apk\app-debug.apk"
+            type="MAIN" />
+    </build>
+
+</instant-run>
