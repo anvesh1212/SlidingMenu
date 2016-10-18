@@ -1,13 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 18
+    compileSdkVersion 23
     buildToolsVersion "24.0.1"
 
     defaultConfig {
         applicationId "info.androidhive.slidingmenu"
         minSdkVersion 11
-        targetSdkVersion 17
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
     }
 
     buildTypes {
@@ -19,6 +21,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:18.0.0'
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:23.2.0'
+    compile 'com.android.support:support-v4:23.0.0'
     compile files('src/main/java/info/androidhive/slidingmenu/volley.jar')
 }

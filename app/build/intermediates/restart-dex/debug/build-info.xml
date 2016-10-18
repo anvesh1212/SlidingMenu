@@ -1,33 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <instant-run
-    abi="armeabi-v7a,armeabi"
-    api-level="23"
+    api-level="22"
     density="xxhdpi"
-    format="7"
-    timestamp="573334771724598"
-    token="6230285712036412468" >
+    format="8"
+    plugin-version="2.2.0"
+    timestamp="69045485066314"
+    token="6230285712036412468"
+    verifier="COLD_SWAP_REQUESTED" >
 
     <task
         name="javac"
-        duration="417" />
+        duration="526" />
     <task
         name="instant-run-dex"
         duration="0" />
     <task
         name="instant-run-transform"
-        duration="99" />
+        duration="28" />
     <task
         name="verifier"
-        duration="7" />
+        duration="8" />
 
     <artifact
-        location="C:\Users\anves\Documents\projects\face detection\github\Conversations-master\SlidingMenu\app\build\outputs\apk\app-debug.apk"
-        type="MAIN" />
+        location="C:\Users\anves\Documents\projects\face detection\github\Conversations-master\SlidingMenu\app\build\intermediates\transforms\dex\debug\folders\1000\5\slice_1\classes.dex"
+        type="DEX" />
 
-    <build timestamp="573334771724598" >
+    <build
+        timestamp="68804781395042"
+        verifier="FULL_BUILD_REQUESTED" >
         <artifact
             location="C:\Users\anves\Documents\projects\face detection\github\Conversations-master\SlidingMenu\app\build\outputs\apk\app-debug.apk"
             type="MAIN" />
+    </build>
+    <build
+        timestamp="69045485066314"
+        verifier="COLD_SWAP_REQUESTED" >
+        <artifact
+            location="C:\Users\anves\Documents\projects\face detection\github\Conversations-master\SlidingMenu\app\build\intermediates\transforms\dex\debug\folders\1000\5\slice_1\classes.dex"
+            type="DEX" />
     </build>
 
 </instant-run>
