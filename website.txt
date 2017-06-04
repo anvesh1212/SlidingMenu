@@ -1,0 +1,13 @@
+links for reference  :
+
+navigation drawer : http://www.androidhive.info/2013/11/android-sliding-menu-using-navigation-drawer/
+
+
+change : 
+
+Home -> Home
+Photos -> Groups
+Movies -> Library
+Notifications -> Schedule
+	-> Trendy
+Settings -> Setting
