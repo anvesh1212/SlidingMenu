@@ -2,19 +2,27 @@ package info.androidhive.slidingmenu;
 
 import info.androidhive.slidingmenu.adapter.NavDrawerListAdapter;
 import info.androidhive.slidingmenu.feed.app.AppController;
-import info.androidhive.slidingmenu.feed.data.FeedItem;
+import info.androidhive.slidingmenu.data.AppConstants;
+import info.androidhive.slidingmenu.feed.writePost;
 import info.androidhive.slidingmenu.model.NavDrawerItem;
 import info.androidhive.slidingmenu.data.userData;
 
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+//import android.app.Fragment;
+//import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -22,7 +30,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -39,10 +49,16 @@ public class MainActivity extends Activity {
 	private DrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private ActionBarDrawerToggle mDrawerToggle;
-    private String URL_MIX_FEED = "http://192.168.0.8:8008/practice/post/json_posts.php?user_id="+userData.getUserId()+"&posts_from=";
-	private String URL_GROUP_LIST = "http://192.168.0.8:8008/practice/post/group_list.php?user_id=";
+    private String URL_MIX_FEED = "http://"+ AppConstants.IpAddress+"/post/json_posts.php?user_id="+userData.getUserId()+"&posts_from=";
+	private String URL_GROUP_LIST = "http://"+AppConstants.IpAddress+"/post/group_list.php?user_id=";
     private String GroupId;
     private String URL_GROUP_FEED;
+
+//image uploading data.
+	int MAX_IMAGE_SIZE = 500;
+	private static int RESULT_LOAD_IMG = 1;
+	String imgDecodableString;
+    public static Bitmap scaledBitmap;
 
  	// nav drawer title
 	private CharSequence mDrawerTitle;
@@ -57,16 +73,24 @@ public class MainActivity extends Activity {
 	private ArrayList<NavDrawerItem> navDrawerItems;
 	private NavDrawerListAdapter adapter;
 
+
+    // a static variable to get a reference of our application context
+    public static Context contextOfApplication;
+    public static Context getContextOfApplication()
+    {
+        return contextOfApplication;
+    }
+
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-
-
 			setContentView(R.layout.activity_main);
 
-			mTitle = mDrawerTitle = getTitle();
 
+			mTitle = mDrawerTitle = getTitle();
+        contextOfApplication = getApplicationContext();
 			// load slide menu items
 //			navMenuTitles = getResources().getStringArray(R.array.nav_drawer_items);
         navMenuTitles.add("NewsFeed") ;
@@ -86,9 +110,7 @@ public class MainActivity extends Activity {
 
 						for (int i = 0; i < groupArray.length(); i++) {
 							JSONObject groupObj = (JSONObject) groupArray.get(i);
-                                userData.addGroup(groupObj.getString("group_name"),groupObj.getString("group_id"));
-                                navMenuTitles.add(groupObj.getString("group_name")) ;
-                            Log.d(TAG, "Group List : just added group name : "+groupObj.getString("group_name"));
+                            userData.addGroup(groupObj.getString("group_name"),groupObj.getString("group_id"));
 
 						}
 
@@ -107,10 +129,11 @@ public class MainActivity extends Activity {
 				VolleyLog.d(TAG, "Error: " + error.getMessage());
                 Log.d(TAG, "group request failed.");
 
-                String[] gl = userData.getGroupNames();
+/*                String[] gl = userData.getGroupNames();
                 for (String Name: gl) {
                     navMenuTitles.add(Name);
                 }
+*/
             }
 		});
 		jsonReq.setShouldCache(false);
@@ -133,21 +156,22 @@ public class MainActivity extends Activity {
 
 
         // nav drawer icons from resources
-        navMenuIcons = getResources()
-                .obtainTypedArray(R.array.nav_drawer_icons);
+        //navMenuIcons = getResources().obtainTypedArray(R.array.nav_drawer_icons);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_slidermenu);
 
         navDrawerItems = new ArrayList<NavDrawerItem>();
 
-        navDrawerItems.add(new NavDrawerItem("NewsFeeds", navMenuIcons.getResourceId(4, -1)));
+        navDrawerItems.add(new NavDrawerItem("NewsFeeds", R.drawable.ic_pages));
         Log.d(TAG, "trying to create navDrawerItems");
         String[] GL = userData.getGroupNames();
         int mx = 0;
         for (String Name: GL) {
             Log.d(TAG, "creating navDrawerItem  : "+mx++);
-            navDrawerItems.add(new NavDrawerItem(Name, navMenuIcons.getResourceId(4, -1)));
+            navMenuTitles.add(Name);
+            navDrawerItems.add(new NavDrawerItem(Name, R.drawable.ic_pages));
+            Log.d(TAG, "Group List : just added group name : "+Name);
         }
 
 
@@ -170,7 +194,7 @@ public class MainActivity extends Activity {
 */
 
         // Recycle the typed array
-        navMenuIcons.recycle();
+        // navMenuIcons.recycle();
 
 
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
@@ -212,18 +236,7 @@ public class MainActivity extends Activity {
             displayView(0);
         }
 
-
-
-
-
     }
-
-
-
-
-
-
-
 
 
 
@@ -278,7 +291,7 @@ public class MainActivity extends Activity {
 	}
 
     public void resetGroupUrl(){
-        this.URL_GROUP_FEED = "http://192.168.0.8:8008/practice/post/json_group_posts.php?group_id="+this.GroupId+"&posts_from=";
+        this.URL_GROUP_FEED = "http://"+AppConstants.IpAddress+"/post/json_group_posts.php?group_id="+this.GroupId+"&posts_from=";
     }
 
 
@@ -335,9 +348,8 @@ public class MainActivity extends Activity {
 */
 
 		if (fragment != null) {
-			FragmentManager fragmentManager = getFragmentManager();
-			fragmentManager.beginTransaction()
-					.replace(R.id.frame_container, fragment).commit();
+			//FragmentManager fragmentManager =     getFragmentManager();
+			//fragmentManager.beginTransaction().replace(R.id.frame_container, fragment).addToBackStack(null).commit();
 
 			// update selected item and title, then close the drawer
 			mDrawerList.setItemChecked(position, true);
@@ -375,9 +387,90 @@ public class MainActivity extends Activity {
 		mDrawerToggle.onConfigurationChanged(newConfig);
 	}
 
+
+
+
     public void Logout(){
+		userData.clearData();
         Intent login = new Intent(this,user_login.class);
         startActivity(login);
+
     }
+
+
+
+    public void loadImagefromGallery(View view) {
+        // Create intent to Open Image applications like Gallery, Google Photos
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Start the Intent
+        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+    }
+
+	public static Bitmap scaleDown(Bitmap realImage, float maxImageSize,
+								   boolean filter) {
+		float ratio = Math.min(
+				(float) maxImageSize / realImage.getWidth(),
+				(float) maxImageSize / realImage.getHeight());
+		int width = Math.round((float) ratio * realImage.getWidth());
+		int height = Math.round((float) ratio * realImage.getHeight());
+
+		Bitmap newBitmap = Bitmap.createScaledBitmap(realImage, width,
+				height, filter);
+		return newBitmap;
+	}
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK && null != data) {
+                // Get the Image from data
+
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Context applicationContext = MainActivity.getContextOfApplication();
+                Cursor cursor = applicationContext.getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+
+                //set image selected.
+                writePost.isImageSelected = true;
+
+                // Set the Image in ImageView after decoding the String
+                ImageView imageView = (ImageView) findViewById(R.id.writePost_image_view) ;
+				scaledBitmap = scaleDown(BitmapFactory.decodeFile(imgDecodableString), MAX_IMAGE_SIZE, true);
+                //imageView.setImageBitmap(BitmapFactory.decodeFile(imgDecodableString));
+				imageView.setImageBitmap(scaledBitmap);
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image", Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+  /*  @Override
+    public void onBackPressed(){
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            Log.i("MainActivity", "popping backstack");
+            fm.popBackStack();
+        } else {
+            Log.i("MainActivity", "nothing on backstack, calling super");
+            super.onBackPressed();
+        }
+    }
+*/
+
 
 }

@@ -12,11 +12,47 @@
     <color name="feed_item_border">#c2c3c8</color>
     <color name="link">#0a80d1</color>
     <color name="timestamp">#a0a3a7</color>
-    <color name="colorPrimary">#ffffff</color>
-    <color name="colorPrimaryDark">#ffffff</color>
-    <color name="colorAccent">#ffffff</color>
     <color name="floatingButton">#FF5722</color>
     <color name="floatingButtonDark">#E64A19</color>
+    <color name="bg_circle">#E64A19</color>
+
+    <color name="colorPrimary">#d32f2f</color>
+    <color name="colorPrimaryDark">#c72c2c</color>
+    <color name="colorAccent">#FFFFFF</color>
+
+    <!--  this are the color values for the new one.
+        <color name="colorPrimary">#d32f2f</color>
+        <color name="colorPrimaryDark">#c72c2c</color>
+        <color name="colorAccent">#FFFFFF</color>
+
+    -->
+
+
+        <color name="event_color_01">#59dbe0</color>
+        <color name="event_color_02">#f57f68</color>
+        <color name="event_color_03">#87d288</color>
+        <color name="event_color_04">#f8b552</color>
+        <color name="toolbar">#efefef</color>
+        <color name="toolbar_text">#8f000000</color>
+        <color name="accent">#2789e4</color>
+
+        <string-array name="event_colors">
+            <item>#ffe0b2</item>
+            <item>#ffcc80</item>
+            <item>#ffb74d</item>
+            <item>#ffa726</item>
+            <item>#ff9800</item>
+            <item>#fb8c00</item>
+            <item>#f57c00</item>
+            <item>#ef6c00</item>
+
+        </string-array>
+
+
+
+
+
+
 
 </resources>
 
